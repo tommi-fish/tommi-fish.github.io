@@ -91,4 +91,121 @@ document.addEventListener('DOMContentLoaded', function() {
             await showProjects();
         }
     });
+
+    function createParticles() {
+        const particlesContainer = document.createElement('div');
+        particlesContainer.className = 'particles';
+        document.getElementById('home').appendChild(particlesContainer);
+
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 5 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    createParticles();
+
+    const codeSnippets = [
+        // JavaScript/TypeScript
+        'const [state, setState] = useState();',
+        'export interface Props {',
+        'async function fetchData() {',
+        'useEffect(() => {}, []);',
+        'npm install @types/react',
+        
+        // React/Next.js
+        'import { NextPage } from "next";',
+        '<Component {...pageProps} />',
+        'getStaticProps({ params })',
+        'return <Layout>...</Layout>',
+        
+        // Node.js
+        'app.listen(PORT, () => {',
+        'const express = require("express");',
+        'mongoose.connect(process.env.DB_URL);',
+        
+        // Go
+        'func main() {',
+        'package main',
+        'type Interface interface {',
+        'if err != nil {',
+        'go func() { ... }()',
+        'fmt.Println("Hello")',
+        'make(chan bool)',
+        
+        // SQL
+        'SELECT * FROM users WHERE',
+        'JOIN orders ON users.id =',
+        'GROUP BY category HAVING',
+        'CREATE TABLE users (',
+        'INSERT INTO products',
+        
+        // Python
+        'def __init__(self, data):',
+        'if __name__ == "__main__":',
+        'with open("file.txt") as f:',
+        'except Exception as e:',
+        
+        // Docker/DevOps
+        'docker-compose up -d',
+        'kubectl get pods',
+        'nginx.conf',
+        'FROM node:alpine',
+        'COPY . /app',
+        
+        // Git
+        'git checkout -b feature/',
+        'git rebase main',
+        'git push origin',
+        
+        // Shell
+        'chmod +x script.sh',
+        'ssh-keygen -t rsa',
+        'curl -X POST http://',
+        
+        // Testing
+        'describe("test suite", () => {',
+        'expect(result).toBe(true);',
+        'test("should return", () => {',
+        
+        // HTML/CSS
+        '@media (max-width: 768px) {',
+        'display: flex;',
+        'grid-template-columns:',
+        
+        // Database
+        'db.collection.find({',
+        'redis-cli SET key value',
+        'CASCADE ON DELETE',
+    ];
+
+    const background = document.createElement('div');
+    background.className = 'code-background';
+    document.getElementById('home').appendChild(background);
+
+    function createCodeLine() {
+        const line = document.createElement('div');
+        line.className = 'code-line';
+        line.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+        line.style.left = Math.random() * 100 + '%';
+        line.style.animationDelay = Math.random() * 5 + 's';
+        background.appendChild(line);
+
+        // Remove the element after animation completes
+        setTimeout(() => {
+            line.remove();
+        }, 15000);
+    }
+
+    // Create more initial lines
+    for (let i = 0; i < 25; i++) { // Increased from 15 to 25
+        setTimeout(createCodeLine, Math.random() * 5000);
+    }
+
+    // Create new lines more frequently
+    setInterval(createCodeLine, 900); // Decreased from 2000 to 1500
 }); 
