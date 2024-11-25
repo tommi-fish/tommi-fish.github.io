@@ -362,17 +362,24 @@ h2 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .load-more-btn:hover {
     background: rgba(100, 255, 218, 0.1);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 255, 218, 0.1);
+}
+
+.load-more-btn:active {
+    transform: translateY(0);
 }
 
 .load-more-btn i {
-    transition: transform 0.3s;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .load-more-btn.active i {
@@ -392,7 +399,10 @@ h2 {
 }
 
 .hidden-projects .project-card {
-    animation: fadeIn 0.5s ease-out forwards;
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: transform, opacity;
 }
 
 /* Contact section */

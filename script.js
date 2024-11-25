@@ -10,24 +10,56 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Project loading functionality
 document.addEventListener('DOMContentLoaded', function() {
     const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const hiddenProjects = document.querySelector('.hidden-projects');
-    let isExpanded = false;
+    const projectCards = Array.from(document.querySelectorAll('.hidden-projects .project-card'));
+    const projectsPerLoad = 3;
+    let currentlyShown = 0;
+
+    // Initially hide all projects
+    projectCards.forEach(card => {
+        card.style.display = 'none';
+    });
 
     loadMoreBtn.addEventListener('click', function() {
-        if (!isExpanded) {
-            hiddenProjects.style.display = 'grid';
-            loadMoreBtn.classList.add('active');
-            loadMoreBtn.querySelector('span').textContent = 'Show Less';
-            
-            // Animate each new project card
-            hiddenProjects.querySelectorAll('.project-card').forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
+        const nextProjects = projectCards.slice(currentlyShown, currentlyShown + projectsPerLoad);
+        
+        if (nextProjects.length === 0) {
+            // Reset if we've shown all projects
+            projectCards.forEach(card => {
+                card.style.display = 'none';
+                card.style.opacity = '0';
             });
-        } else {
-            hiddenProjects.style.display = 'none';
-            loadMoreBtn.classList.remove('active');
+            currentlyShown = 0;
             loadMoreBtn.querySelector('span').textContent = 'Load More Projects';
+            loadMoreBtn.classList.remove('active');
+            document.querySelector('.hidden-projects').style.display = 'none';
+            return;
         }
-        isExpanded = !isExpanded;
+
+        // Show the container if this is the first batch
+        if (currentlyShown === 0) {
+            document.querySelector('.hidden-projects').style.display = 'grid';
+        }
+
+        // Show next batch of projects
+        nextProjects.forEach((card, index) => {
+            card.style.display = 'block';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            // Trigger animation with delay for each card
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+
+        currentlyShown += projectsPerLoad;
+
+        // Update button text and state
+        if (currentlyShown >= projectCards.length) {
+            loadMoreBtn.querySelector('span').textContent = 'Show Less';
+            loadMoreBtn.classList.add('active');
+        }
     });
 }); 
