@@ -187,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     background.className = 'code-background';
     document.getElementById('home').appendChild(background);
 
+    // Function to create a single animated code line
     function createCodeLine() {
         const line = document.createElement('div');
         line.className = 'code-line';
@@ -198,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove the element after animation completes
         setTimeout(() => {
             line.remove();
-        }, 15000);
+        }, 15000); // Remove after 15 seconds
     }
 
     // Create more initial lines
@@ -208,4 +209,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Create new lines more frequently
     setInterval(createCodeLine, 900); // Decreased from 2000 to 1500
-}); 
+});
