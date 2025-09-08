@@ -1,212 +1,133 @@
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-});
+document.addEventListener("DOMContentLoaded", () => {
+  // Update copyright year
+  document.getElementById("year").textContent = new Date().getFullYear()
 
-// Project loading functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const projectCards = Array.from(document.querySelectorAll('.hidden-projects .project-card'));
-    const hiddenProjectsContainer = document.querySelector('.hidden-projects');
-    const projectsPerLoad = 3;
-    let currentlyShown = 0;
-    let isAnimating = false;
+  // Generate ASCII art
+  generateAsciiArt()
 
-    // Initially hide all projects
-    projectCards.forEach(card => {
-        card.style.display = 'none';
-    });
+  // Add terminal typing effect to bio
+  const bioElement = document.querySelector(".bio")
+  const bioText = bioElement.textContent
+  bioElement.textContent = ""
+  typeText(bioElement, bioText)
 
-    async function hideProjects() {
-        const visibleProjects = projectCards.slice(0, currentlyShown);
-        
-        // Animate each card out in reverse order
-        for (let i = visibleProjects.length - 1; i >= 0; i--) {
-            const card = visibleProjects[i];
-            card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            await new Promise(resolve => setTimeout(resolve, 100));
+  // Add scan line effect
+  addScanLineEffect()
+
+  // Simulate terminal typing
+  simulateTerminalTyping()
+})
+
+function generateAsciiArt() {
+  const container = document.getElementById("ascii-container")
+
+  // The exact fish ASCII art provided with added padding for vertical centering
+  const fishArt = `
+
+
+
+
+
+
+o
+o      ______/~/~/~/__           /((
+  o  // __            ====__    /_((
+ o  //  @))       ))))      ===/__((
+    ))           )))))))        __((
+    \\\\     \\)     ))))    __===\\ _((
+     \\\\_______________====      \\_((
+                                 \\((
+
+
+
+
+
+
+`
+
+  // Set the ASCII art to the container with simplified styling
+  container.innerHTML = fishArt
+  container.style.fontSize = "14px"
+  container.style.lineHeight = "1.2"
+  container.style.fontFamily = "monospace"
+  container.style.whiteSpace = "pre"
+  container.style.color = "var(--text-color)"
+
+  // Remove any background or border styling that might cause visual artifacts
+  container.style.background = "transparent"
+  container.style.border = "none"
+}
+
+// Function for typing effect
+function typeText(element, text, index = 0, speed = 30) {
+  if (index < text.length) {
+    element.textContent += text.charAt(index)
+    index++
+    setTimeout(() => typeText(element, text, index, speed), speed)
+  }
+}
+
+// Add scan line effect
+function addScanLineEffect() {
+  // Add random scan line
+  const scanLine = document.createElement("div")
+  scanLine.className = "scan-line"
+  document.body.appendChild(scanLine)
+
+  setInterval(() => {
+    scanLine.style.top = `${Math.random() * 100}%`
+    scanLine.style.opacity = "1"
+    setTimeout(() => {
+      scanLine.style.opacity = "0"
+    }, 100)
+  }, 3000)
+}
+
+// Simulate terminal typing
+function simulateTerminalTyping() {
+  const commands = ["ls -la", "cat about.txt", "cd projects", "git status", "npm start"]
+
+  const terminalPrompt = document.querySelector(".terminal-prompt")
+  const cursor = document.querySelector(".cursor")
+
+  let currentCommand = ""
+  let commandIndex = 0
+  let charIndex = 0
+
+  function typeCommand() {
+    if (charIndex < commands[commandIndex].length) {
+      currentCommand += commands[commandIndex][charIndex]
+      const commandSpan = document.createElement("span")
+      commandSpan.textContent = currentCommand
+
+      // Remove previous command if exists
+      const existingCommand = terminalPrompt.querySelector(".command")
+      if (existingCommand) {
+        terminalPrompt.removeChild(existingCommand)
+      }
+
+      commandSpan.className = "command"
+      terminalPrompt.insertBefore(commandSpan, cursor)
+
+      charIndex++
+      setTimeout(typeCommand, Math.random() * 100 + 50)
+    } else {
+      // Command completed, wait and clear
+      setTimeout(() => {
+        const existingCommand = terminalPrompt.querySelector(".command")
+        if (existingCommand) {
+          terminalPrompt.removeChild(existingCommand)
         }
 
-        // Wait for the last animation to complete
-        await new Promise(resolve => setTimeout(resolve, 500));
+        currentCommand = ""
+        charIndex = 0
+        commandIndex = (commandIndex + 1) % commands.length
 
-        // Hide all cards and reset container
-        projectCards.forEach(card => {
-            card.style.display = 'none';
-            card.style.opacity = '0';
-        });
-        hiddenProjectsContainer.style.display = 'none';
-        
-        // Reset states
-        currentlyShown = 0;
-        loadMoreBtn.querySelector('span').textContent = 'Load More Projects';
-        loadMoreBtn.classList.remove('active');
-        isAnimating = false;
+        setTimeout(typeCommand, 1000)
+      }, 2000)
     }
+  }
 
-    async function showProjects() {
-        if (currentlyShown === 0) {
-            hiddenProjectsContainer.style.display = 'grid';
-        }
-
-        const nextProjects = projectCards.slice(currentlyShown, currentlyShown + projectsPerLoad);
-        
-        // Show and animate each new card
-        for (const card of nextProjects) {
-            card.style.display = 'block';
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }
-
-        currentlyShown += projectsPerLoad;
-
-        if (currentlyShown >= projectCards.length) {
-            loadMoreBtn.querySelector('span').textContent = 'Show Less';
-            loadMoreBtn.classList.add('active');
-        }
-        
-        isAnimating = false;
-    }
-
-    loadMoreBtn.addEventListener('click', async function() {
-        if (isAnimating) return;
-        isAnimating = true;
-
-        if (loadMoreBtn.classList.contains('active')) {
-            await hideProjects();
-        } else {
-            await showProjects();
-        }
-    });
-
-    function createParticles() {
-        const particlesContainer = document.createElement('div');
-        particlesContainer.className = 'particles';
-        document.getElementById('home').appendChild(particlesContainer);
-
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 15 + 's';
-            particle.style.animationDuration = (Math.random() * 5 + 10) + 's';
-            particlesContainer.appendChild(particle);
-        }
-    }
-
-    createParticles();
-
-    const codeSnippets = [
-        // JavaScript/TypeScript
-        'const [state, setState] = useState();',
-        'export interface Props {',
-        'async function fetchData() {',
-        'useEffect(() => {}, []);',
-        'npm install @types/react',
-        
-        // React/Next.js
-        'import { NextPage } from "next";',
-        '<Component {...pageProps} />',
-        'getStaticProps({ params })',
-        'return <Layout>...</Layout>',
-        
-        // Node.js
-        'app.listen(PORT, () => {',
-        'const express = require("express");',
-        'mongoose.connect(process.env.DB_URL);',
-        
-        // Go
-        'func main() {',
-        'package main',
-        'type Interface interface {',
-        'if err != nil {',
-        'go func() { ... }()',
-        'fmt.Println("Hello")',
-        'make(chan bool)',
-        
-        // SQL
-        'SELECT * FROM users WHERE',
-        'JOIN orders ON users.id =',
-        'GROUP BY category HAVING',
-        'CREATE TABLE users (',
-        'INSERT INTO products',
-        
-        // Python
-        'def __init__(self, data):',
-        'if __name__ == "__main__":',
-        'with open("file.txt") as f:',
-        'except Exception as e:',
-        
-        // Docker/DevOps
-        'docker-compose up -d',
-        'kubectl get pods',
-        'nginx.conf',
-        'FROM node:alpine',
-        'COPY . /app',
-        
-        // Git
-        'git checkout -b feature/',
-        'git rebase main',
-        'git push origin',
-        
-        // Shell
-        'chmod +x script.sh',
-        'ssh-keygen -t rsa',
-        'curl -X POST http://',
-        
-        // Testing
-        'describe("test suite", () => {',
-        'expect(result).toBe(true);',
-        'test("should return", () => {',
-        
-        // HTML/CSS
-        '@media (max-width: 768px) {',
-        'display: flex;',
-        'grid-template-columns:',
-        
-        // Database
-        'db.collection.find({',
-        'redis-cli SET key value',
-        'CASCADE ON DELETE',
-    ];
-
-    const background = document.createElement('div');
-    background.className = 'code-background';
-    document.getElementById('home').appendChild(background);
-
-    // Function to create a single animated code line
-    function createCodeLine() {
-        const line = document.createElement('div');
-        line.className = 'code-line';
-        line.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
-        line.style.left = Math.random() * 100 + '%';
-        line.style.animationDelay = Math.random() * 5 + 's';
-        background.appendChild(line);
-
-        // Remove the element after animation completes
-        setTimeout(() => {
-            line.remove();
-        }, 15000); // Remove after 15 seconds
-    }
-
-    // Create more initial lines
-    for (let i = 0; i < 25; i++) { // Increased from 15 to 25
-        setTimeout(createCodeLine, Math.random() * 5000);
-    }
-
-    // Create new lines more frequently
-    setInterval(createCodeLine, 900); // Decreased from 2000 to 1500
-});
+  // Start typing after a delay
+  setTimeout(typeCommand, 1000)
+}
